@@ -3,7 +3,7 @@ import json
 # Replace with the URL of your API
 url = "http://localhost:5000/query"
 
-# Replace the payload with the data you want to send
+# Replace the query with the query you want to send
 payload = {"query": "buy soap"}
 
 # Make the POST request
