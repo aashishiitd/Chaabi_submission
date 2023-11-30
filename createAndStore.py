@@ -1,3 +1,4 @@
+#put the file in the code in line no.33
 import numpy as np
 import pandas as pd
 import torch
@@ -11,7 +12,7 @@ from tqdm import tqdm
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 model = AutoModel.from_pretrained('bert-base-uncased')
 
-
+# create embedding 
 def get_embedding_batch(texts):
     texts = texts.tolist()
     encoded_inputs = tokenizer.batch_encode_plus(texts, padding='longest', truncation=True, max_length=512, return_tensors='pt')
@@ -29,7 +30,7 @@ def process_column(column):
     return embeddings
 
 # Load the data
-df = pd.read_csv('/content/drive/MyDrive/NLP_/Book1-.csv', on_bad_lines='skip')
+df = pd.read_csv("Book1.csv", on_bad_lines='skip') #paste the file path
 df = df.dropna(subset=['product'])
 
 # Process each column in parallel
@@ -44,11 +45,12 @@ qdrant_client = QdrantClient(
     url="https://ce08a85c-c7d5-482f-b897-0ebbd35940b0.us-east4-0.gcp.cloud.qdrant.io:6333",
     api_key="J9D_YF2h6s33XRY-20xaHbQurQCEIvV35uGqhAOIqCnl79TDGnbQNg",
 )
-
-qdrant_client.create_collection(
-    collection_name="bigbasket2",
-    vectors_config=VectorParams(size=4608, distance=Distance.DOT),
-)
+# only uncomment if you want to create new collection and hence 
+# make the changes at other lines as well.
+# qdrant_client.create_collection(
+#     collection_name="bigbasket1",
+#     vectors_config=VectorParams(size=4608, distance=Distance.DOT),
+# )
 
 # Upsert in batches
 batch_size = 32
@@ -59,4 +61,4 @@ for i in tqdm(range(0, len(df), batch_size)):
         "vector": row['combined_embedding'].tolist(),
         "payload": {"product": row['product']}
     } for index, row in batch.iterrows()]
-    qdrant_client.upsert(collection_name="bigbasket2", points=points)
+    qdrant_client.upsert(collection_name="bigbasket1", points=points)
